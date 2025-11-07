@@ -1,0 +1,17 @@
+spring:
+  main:
+    lazy-initialization: true
+  application:
+   name: populationDataMS
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRESQL_DATABASE}
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+  sql:
+    init:
+      mode: never
+      schema-locations: classpath:schema.sql
+      continue-on-error: false
+server:
+  port: 8081
