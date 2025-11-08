@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/counties")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin(origins = "http://localhost:4200")
 public class CountyController {
     private final CountyService countyService;
 
-    @GetMapping("/all")
+    @GetMapping("/counties")
     public ResponseEntity<Response> getCounties() {
 
         try {
@@ -38,14 +39,14 @@ public class CountyController {
 
         }
     }
-    @GetMapping("/by-code")
-    public ResponseEntity<Response> getCountyByCode(@RequestParam int code){
+    @GetMapping("/counties/by-code/{code}")
+    public ResponseEntity<Response> getCountyByCode(@PathVariable int code){
         try {
             var data = countyService.getCountyPopulationByCode(code);
 
             return ResponseEntity.ok().body(
                     new Response(
-                            String.format("Retrieve data for %d county", code),
+                            String.format("Retrieve data for county no %d ", code),
                             HttpStatus.OK,
                             HttpStatus.OK.value(),
                             Map.of("county", data)
@@ -57,7 +58,7 @@ public class CountyController {
         }
     }
 
-    @GetMapping("by-name/{name}")
+    @GetMapping("/counties/by-name/{name}")
     public ResponseEntity<Response> getCountyByName(@PathVariable String name){
 
         try {

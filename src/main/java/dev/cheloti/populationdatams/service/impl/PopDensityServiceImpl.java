@@ -22,24 +22,24 @@ public class PopDensityServiceImpl implements PopDensityService {
     private final PopDensityMapper mapper;
     private final PropertyValidator validate;
     @Override
-    public List<PopDensityDTO> getCountiesPopDensity() {
+    public PopDensityDTO getCountiesPopDensity() {
 
         var data = popDensityRepository.findCountiesPopDensity();
-        return List.of(mapper.toDTOs(data));
+        return mapper.toDTOs(data);
     }
 
     @Override
-    public Optional<PopDensityDTO> getCountyPopDensityByCode(int code) {
+    public PopDensityDTO getCountyPopDensityByCode(int code) {
         validate.validateCode(code);
         var data = popDensityRepository.findCountyPopDensityByCode(code)
                 .orElseThrow(()-> new ResourceNotFoundException(String.format("County no %d not found", code)));
-        return Optional.of(mapper.toDTO(data));
+        return mapper.toDTO(data);
     }
 
     @Override
-    public Optional<PopDensityDTO> getCountyPopDensityByName(String name) {
+    public PopDensityDTO getCountyPopDensityByName(String name) {
+        validate.validateName(name);
         var data = popDensityRepository.findCountyPopDensityByName(name).map(mapper::toDTO);
-        return Optional.of(data)
-                .orElseThrow(()-> new ResourceNotFoundException(String.format("%s county not found", name)));
+        return data.orElseThrow(()-> new ResourceNotFoundException(String.format("%s county not found", name)));
     }
 }

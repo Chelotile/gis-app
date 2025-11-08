@@ -21,27 +21,28 @@ public class CountyServiceImpl implements CountyService {
     private final CountyMapper countyMapper;
     private final PropertyValidator propertyValidator;
     @Override
-    public List<CountyDTO> getCountiesPopulation() {
+    public CountyDTO getCountiesPopulation() {
 
         var data =  countyRepository.findCountiesPopulation();
 
-        return List.of(countyMapper.toCountiesDTO(data));
+        return countyMapper.toCountiesDTO(data);
     }
 
     @Override
-    public Optional<CountyDTO> getCountyPopulationByCode(int code) {
+    public CountyDTO getCountyPopulationByCode(int code) {
         propertyValidator.validateCode(code);
         var data = countyRepository.findCountyPopulationByCode(code)
-                .orElseThrow(()-> new ResourceNotFoundException("County not found"));
-        return Optional.of(countyMapper.toCountyDTO(data));
+                .orElseThrow(()-> new ResourceNotFoundException(String.format("County no %d not found", code)));
+
+        return countyMapper.toCountyDTO(data);
     }
 
     @Override
-    public Optional<CountyDTO> getCountyPopulationByName(String name) {
+    public CountyDTO getCountyPopulationByName(String name) {
         propertyValidator.validateName(name);
         var data = countyRepository.findCountyPopulationByName(name)
-                .orElseThrow(()-> new ResourceNotFoundException("County not found"));
-        return Optional.of(countyMapper.toCountyDTO(data));
+                .orElseThrow(()-> new ResourceNotFoundException(String.format(name, "%s county not found")));
+        return countyMapper.toCountyDTO(data);
     }
 
 }

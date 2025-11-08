@@ -2,12 +2,19 @@ package dev.cheloti.populationdatams.service;
 
 import dev.cheloti.populationdatams.dto.PopDensityDTO;
 
-import java.util.List;
-import java.util.Optional;
 
 public interface PopDensityService {
 
-    List<PopDensityDTO> getCountiesPopDensity();
-    Optional<PopDensityDTO> getCountyPopDensityByCode(int code);
-    Optional<PopDensityDTO> getCountyPopDensityByName(String name);
+    /**
+     * GeoJSON FeatureCollection with Multi-feature for all counties
+     */
+    PopDensityDTO getCountiesPopDensity();
+    /**
+     * GeoJSON FeatureCollection with single feature for specific county
+     */
+    PopDensityDTO getCountyPopDensityByCode(int code);
+    /**
+     * GeoJSON FeatureCollection with single feature for specific county
+     */
+    PopDensityDTO getCountyPopDensityByName(String name);
 }

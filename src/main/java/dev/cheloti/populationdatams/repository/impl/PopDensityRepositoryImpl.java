@@ -1,12 +1,14 @@
 package dev.cheloti.populationdatams.repository.impl;
 
 import dev.cheloti.populationdatams.domain.PopDensity;
+import dev.cheloti.populationdatams.queries.PopDensityQueries;
 import dev.cheloti.populationdatams.repository.PopDensityRepository;
+import dev.cheloti.populationdatams.repository.dataBaseClient.JDBClient;
 import dev.cheloti.populationdatams.rowMapper.PopDensityRowMapper;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,22 +19,14 @@ import java.util.Optional;
 public class PopDensityRepositoryImpl implements PopDensityRepository {
 
     private final PopDensityRowMapper mapper;
-    private final JdbcClient jdbc;
+    private final JDBClient jdbc;
 
     @Override
     public List<PopDensity> findCountiesPopDensity() {
         try {
-            var sqlquery = """
-                    SELECT c.county_code,
-                    c.county_name,
-                    round(c.population/(st_area(st_transform(c.geometry, 21097))/1000000)) as population_density,
-                    st_asgeojson(st_simplify(c.geometry::geometry, 0.001)) as geometry
-                    FROM counties c
-                    ORDER BY c.county_code 
-                    """;
-            return jdbc.sql(sqlquery)
-                    .query(mapper)
-                    .list();
+            var query = PopDensityQueries.GET_ALL_COUNTIES_POP_DENSITY;
+            return jdbc.getAllQuery(query, mapper);
+
         } catch (BadSqlGrammarException e) {
             log.error("error occurred while fetching counties pop density", e);
             log.error(e.getSql());
@@ -42,34 +36,14 @@ public class PopDensityRepositoryImpl implements PopDensityRepository {
     }
 
     @Override
-    public Optional<PopDensity> findCountyPopDensityByCode(int code) {
-        var sql = """
-                SELECT c.county_code,
-                c.county_name,
-                ceil(c.population/(st_area(st_transform(c.geometry, 21097))/1000000)) as population_density,
-                st_asgeojson(st_simplify(c.geometry::geometry, 0.001)) as geometry
-                FROM counties c
-                WHERE c.county_code = ?
-                """;
-        return jdbc.sql(sql)
-                .param(code)
-                .query(mapper)
-                .optional();
+    public Optional<PopDensity> findCountyPopDensityByCode(@NotNull int code) {
+        var sql = PopDensityQueries.GET_COUNTY_POP_DENSITY_BY_CODE;
+        return jdbc.getQuery(sql, mapper, code);
     }
 
     @Override
-    public Optional<PopDensity> findCountyPopDensityByName(String name) {
-        var sql = """
-                SELECT c.county_code,
-                c.county_name,
-                ceil(c.population/(st_area(st_transform(c.geometry, 21097))/1000000)) as population_density,
-                st_asgeojson(st_simplify(c.geometry::geometry, 0.001)) as geometry
-                FROM counties c
-                WHERE c.county_name ILIKE $1
-                """;
-        return jdbc.sql(sql)
-                .param(name)
-                .query(mapper)
-                .optional();
+    public Optional<PopDensity> findCountyPopDensityByName(@NotNull String name) {
+        var sql = PopDensityQueries.GET_COUNTY_POP_DENSITY_NAME;
+        return jdbc.getQuery(sql, mapper, name);
     }
 }

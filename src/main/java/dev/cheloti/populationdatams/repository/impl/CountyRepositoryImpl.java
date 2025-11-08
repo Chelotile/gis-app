@@ -3,6 +3,7 @@ package dev.cheloti.populationdatams.repository.impl;
 import dev.cheloti.populationdatams.entities.County;
 import dev.cheloti.populationdatams.queries.CountyQueries;
 import dev.cheloti.populationdatams.repository.CountyRepository;
+import dev.cheloti.populationdatams.repository.dataBaseClient.JDBClient;
 import dev.cheloti.populationdatams.rowMapper.CountyRowMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +19,15 @@ import java.util.Optional;
 @Slf4j
 public class CountyRepositoryImpl implements CountyRepository {
 
-    private final JdbcClient jdbcClient;
+    private final JDBClient jdbc;
     private final CountyRowMapper countyRowMapper;
 
     @Override
     public List<County> findCountiesPopulation() {
         try {
             String sql = CountyQueries.GET_COUNTIES_POPULATION;
-            return jdbcClient.sql(sql)
-                    .query(countyRowMapper)
-                    .list();
+            return jdbc.getAllQuery(sql, countyRowMapper);
+
         } catch (BadSqlGrammarException e) {
             log.error( e.getSql());
             log.error(e.getMessage());
@@ -37,11 +37,13 @@ public class CountyRepositoryImpl implements CountyRepository {
 
     @Override
     public Optional<County> findCountyPopulationByCode(int code) {
-        String sql = CountyQueries.GET_COUNTY_POPULATION_BY_CODE;
-        return jdbcClient.sql(sql)
-                .param(code)
-                .query(countyRowMapper)
-                .optional();
+        try {
+            String sql = CountyQueries.GET_COUNTY_POPULATION_BY_CODE;
+            return jdbc.getQuery(sql, countyRowMapper, code);
+        } catch (BadSqlGrammarException e) {
+            log.error( e.getSql());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
@@ -49,10 +51,7 @@ public class CountyRepositoryImpl implements CountyRepository {
 
         try {
             var sql = CountyQueries.GET_COUNTY_POPULATION_BY_NAME;
-            return jdbcClient.sql(sql)
-                    .param(name)
-                    .query(countyRowMapper)
-                    .optional();
+            return jdbc.getQuery(sql, countyRowMapper, name);
         } catch (BadSqlGrammarException e) {
             log.error(e.getMessage());
             log.error(e.getSql());
