@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface CountyRepository {
     List<County> findCountiesPopulation();
+    List<County> findCountiesWithPopAbove(long minPopulation);
     Optional<County> findCountyPopulationByCode(int code);
     Optional<County> findCountyPopulationByName(String name);
 }

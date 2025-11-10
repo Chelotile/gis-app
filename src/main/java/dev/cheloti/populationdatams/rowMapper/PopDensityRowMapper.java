@@ -1,7 +1,7 @@
 package dev.cheloti.populationdatams.rowMapper;
 
 import dev.cheloti.populationdatams.domain.PopDensity;
-import dev.cheloti.populationdatams.utilis.PropertyReader;
+import dev.cheloti.populationdatams.utilis.Reader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class PopDensityRowMapper implements RowMapper<PopDensity> {
 
-    private final PropertyReader reader;
+    private final Reader reader;
     @Override
     public PopDensity mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new PopDensity(

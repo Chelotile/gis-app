@@ -1,7 +1,6 @@
 package dev.cheloti.populationdatams.controller;
 
 import dev.cheloti.populationdatams.domain.Response;
-import dev.cheloti.populationdatams.exceptions.ResourceNotFoundException;
 import dev.cheloti.populationdatams.service.PopDensityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,20 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/pop")
+@RequestMapping("/api/popDensity")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 public class PopDensityController {
 
     private final PopDensityService popDensityService;
 
-    @GetMapping("/all")
+    @GetMapping("/allCounties")
     public ResponseEntity<Response> getCountiesPopDensity() {
-
-        try {
             var data = popDensityService.getCountiesPopDensity();
-
             return ResponseEntity.ok().body(
                     new Response(
                             "counties pop density",
@@ -33,15 +29,22 @@ public class PopDensityController {
                             HttpStatus.OK.value(),
                             Map.of("data", data))
             );
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+    }
+    @GetMapping("/counties")
+    public ResponseEntity<Response> getCountiesWithPopDensityAbove(@RequestParam long popDensityAbove) {
+        var data = popDensityService.getCountiesWithPopDensityAbove(popDensityAbove);
+        return ResponseEntity.ok().body(
+                new Response(
+                        String.format("counties with pop density above %d",popDensityAbove),
+                        HttpStatus.OK,
+                        HttpStatus.OK.value(),
+                        Map.of("data", data)
+                )
+        );
     }
     @GetMapping("/by-code/{code}")
     public ResponseEntity<Response> getCountyPopDensityByCode(@PathVariable int code){
 
-        try {
             var data = popDensityService.getCountyPopDensityByCode(code);
 
             return ResponseEntity.ok().body(
@@ -52,16 +55,12 @@ public class PopDensityController {
                             Map.of("data", data)
                     )
             );
-        } catch (ResourceNotFoundException e) {
-            log.error(e.getMessage(), e);
-            throw new ResourceNotFoundException("county number " + code + " not found");
-        }
+
     }
 
     @GetMapping("/by-name/{name}")
     public ResponseEntity<Response> getCountyPopDensityByName(@PathVariable String name) {
 
-        try {
             var data = popDensityService.getCountyPopDensityByName(name);
             return ResponseEntity.ok().body(
                     new Response(
@@ -71,16 +70,5 @@ public class PopDensityController {
                             Map.of("data", data)
                     )
             );
-        } catch (ResourceNotFoundException e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response(
-                            String.format(name, "%s county not found"),
-                            HttpStatus.NOT_FOUND,
-                            HttpStatus.NOT_FOUND.value(),
-                            Map.of("data", e)
-                    )
-            );
-        }
     }
 }

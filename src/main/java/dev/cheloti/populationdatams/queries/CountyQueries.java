@@ -26,4 +26,13 @@ public class CountyQueries {
             FROM counties c
             WHERE c.county_name = ?
             """;
+    public static final String GET_COUNTIES_WITH_POPULATION_ABOVE = """
+            SELECT c.county_code,
+            c.county_name,
+            c.population,
+            st_asgeojson(st_simplify(geometry::geometry, 0.001)) as geometry
+            FROM counties c
+            WHERE c.population > ?
+            ORDER BY c.county_code
+            """;
 }

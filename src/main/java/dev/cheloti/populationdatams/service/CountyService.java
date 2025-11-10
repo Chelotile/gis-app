@@ -8,6 +8,8 @@ public interface CountyService {
      * GeoJSON FeatureCollection with Multi-feature for all counties
      */
     CountyDTO getCountiesPopulation();
+
+    CountyDTO getCountiesWithPopulationAbove(long minPopulation);
     /**
      * GeoJSON FeatureCollection with single feature for specific county
      */

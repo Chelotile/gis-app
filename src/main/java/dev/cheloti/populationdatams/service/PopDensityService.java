@@ -9,6 +9,12 @@ public interface PopDensityService {
      * GeoJSON FeatureCollection with Multi-feature for all counties
      */
     PopDensityDTO getCountiesPopDensity();
+
+    PopDensityDTO getCountiesWithPopDensityAbove(long popDensityAbove);
+
+
+
+
     /**
      * GeoJSON FeatureCollection with single feature for specific county
      */

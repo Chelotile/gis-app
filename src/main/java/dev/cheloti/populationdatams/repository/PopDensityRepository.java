@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface PopDensityRepository {
     List<PopDensity> findCountiesPopDensity();
+    List<PopDensity> findCountiesWithPopDensityAbove(long popDensityAbove);
     Optional<PopDensity> findCountyPopDensityByCode(int code);
     Optional<PopDensity> findCountyPopDensityByName(String name);
 }

@@ -1,7 +1,7 @@
 package dev.cheloti.populationdatams.rowMapper;
 
 import dev.cheloti.populationdatams.entities.County;
-import dev.cheloti.populationdatams.utilis.PropertyReader;
+import dev.cheloti.populationdatams.utilis.Reader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 @Component
 @RequiredArgsConstructor
 public class CountyRowMapper implements RowMapper<County> {
-    private final PropertyReader reader;
+    private final Reader reader;
     @Override
     public County mapRow(ResultSet rs, int rowNum) throws SQLException {
         return  new County(

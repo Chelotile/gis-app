@@ -5,13 +5,10 @@ import dev.cheloti.populationdatams.dtoMapper.CountyMapper;
 import dev.cheloti.populationdatams.exceptions.ResourceNotFoundException;
 import dev.cheloti.populationdatams.repository.CountyRepository;
 import dev.cheloti.populationdatams.service.CountyService;
-import dev.cheloti.populationdatams.validation.PropertyValidator;
+import dev.cheloti.populationdatams.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -19,7 +16,7 @@ import java.util.Optional;
 public class CountyServiceImpl implements CountyService {
     private final CountyRepository countyRepository;
     private final CountyMapper countyMapper;
-    private final PropertyValidator propertyValidator;
+    private final Validator validator;
     @Override
     public CountyDTO getCountiesPopulation() {
 
@@ -29,8 +26,14 @@ public class CountyServiceImpl implements CountyService {
     }
 
     @Override
+    public CountyDTO getCountiesWithPopulationAbove(long minPopulation) {
+
+        var data = countyRepository.findCountiesWithPopAbove(minPopulation);
+        return countyMapper.toCountiesDTO(data);
+    }
+
+    @Override
     public CountyDTO getCountyPopulationByCode(int code) {
-        propertyValidator.validateCode(code);
         var data = countyRepository.findCountyPopulationByCode(code)
                 .orElseThrow(()-> new ResourceNotFoundException(String.format("County no %d not found", code)));
 
@@ -39,9 +42,8 @@ public class CountyServiceImpl implements CountyService {
 
     @Override
     public CountyDTO getCountyPopulationByName(String name) {
-        propertyValidator.validateName(name);
         var data = countyRepository.findCountyPopulationByName(name)
-                .orElseThrow(()-> new ResourceNotFoundException(String.format(name, "%s county not found")));
+                .orElseThrow(()-> new ResourceNotFoundException(String.format("%s county not found",name)));
         return countyMapper.toCountyDTO(data);
     }
 
